@@ -1,6 +1,3 @@
-//client id: 295890698417340417
-//client secret: eeX4u7GhSXAvt4CquizWb_--5sY41oQP
-
 //https://discordapp.com/oauth2/authorize?&client_id=295890698417340417&scope=bot&permissions=0
 
 /* Macros ****/
