@@ -23,6 +23,8 @@ use vending::{ItemOnSale, BuyingItem};
 
 use std::sync::Arc;
 
+use std::env;
+
 fn look_for_sale(vending_api: VendingApi, name: String) -> impl Future<Item=Vec<ItemOnSale>, Error=VendingApiError> {
     vending_api.vending()
         .map(move |items| {
@@ -56,7 +58,7 @@ fn look_for_buying(vending_api: VendingApi, name: String) -> impl Future<Item=Ve
 }
 
 fn main() {
-    let token_bot = "Mjk1ODkwNjk4NDE3MzQwNDE3.C7qTWA.uNinGhRhSMj3sun83Ke_uIF4kjw";
+    let token_bot = &env::var("ROM_DISCORD_TOKEN").expect("Unable to find discord bot token from env var. Please check env var ROM_DISCORD_TOKEN is correctly setup.");
 
     let discord = Discord::from_bot_token(&token_bot).expect("Unable to make bot from token.");
     let discord = Arc::new(discord);
@@ -66,7 +68,6 @@ fn main() {
     let (mut connection, _) = discord.connect().expect("Unable to connect.");
 
     println!("Ready.");
-
 
     loop {
         match connection.recv_event() {
