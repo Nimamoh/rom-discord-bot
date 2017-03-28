@@ -5,3 +5,9 @@ authors = ["Romain Gautier <romain@nimamoh.net>"]
 
 [dependencies]
 discord = "^0.8.0"
+futures = "^0.1.9"
+
+hyper = "^0.9.18"
+serde = "^0.9"
+serde_json = "^0.9"
+serde_derive = "^0.9"
