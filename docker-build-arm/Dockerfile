@@ -17,6 +17,8 @@ RUN apt-get update &&\
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 RUN source ~/.cargo/env &&\
     echo "source ~/.cargo/env" >> ~/.bashrc &&\
+    rustup install nightly &&\
+    rustup default nightly-x86_64-unknown-linux-gnu &&\
     rustup target add arm-unknown-linux-gnueabihf
 
 #openssl. Since some deps are manipulated we restore it afterwards
