@@ -73,28 +73,37 @@ fn main() {
         match connection.recv_event() {
             Ok(Event::MessageCreate(message)) => {
                 let content = message.content.clone();
+                let author_id = message.author.id;
+
                 if content.is_char_boundary(2) {
                     let (prefix, item) = content.split_at(2);
 
-                    let item_name = item.to_string();
+                    let item_name = item.trim().to_string();
                     let vending_api = vending_api.clone();
                     let channel_id = message.channel_id.clone();
                     let discord = discord.clone();
+
+
+                    if item_name.len() < 3 {
+                        println!("Item name less than 3 chars. Passing");
+                        continue;
+                    }
 
                     match prefix {
                         "B>" => {
                             println!("Look for selling {}", item);
 
                             std::thread::spawn(move || {
+                                let private_channel_id = discord.create_private_channel(author_id).unwrap().id;
                                 let items = look_for_sale(vending_api, item_name).wait().unwrap();
 
                                 if items.len() == 0 {
-                                    discord.send_message(channel_id, "Sorry, the item you're looking for doesn't seem to be in sale", "", false);
+                                    discord.send_message(private_channel_id, "Sorry, the item you're looking for doesn't seem to be in sale", "", false);
                                 }
 
                                 for item in items.into_iter() {
                                     let msg : String = format!("**{}** **{}** for **{}**z each. Shop name: **{}**. **{}**", item.amount(), item.name(), item.price(), item.shop_name(), item.location());
-                                    discord.send_message(channel_id, &msg, "", false);
+                                    discord.send_message(private_channel_id, &msg, "", false);
                                 }
                             });
                         }
@@ -102,15 +111,16 @@ fn main() {
                             println!("Look for buying {}", item);
 
                             std::thread::spawn(move || {
+                                let private_channel_id = discord.create_private_channel(author_id).unwrap().id;
                                 let items = look_for_buying(vending_api, item_name).wait().unwrap();
 
                                 if items.len() == 0 {
-                                    discord.send_message(channel_id, "Sorry, the item you wanna sell doesn't seem to match any buy proposition right now", "", false);
+                                    discord.send_message(private_channel_id, "Sorry, the item you wanna sell doesn't seem to match any buy proposition right now", "", false);
                                 }
 
                                 for item in items.into_iter() {
                                     let msg : String = format!("**{}** **{}** for **{}**z each. Shop name: **{}**. **{}**", item.amount(), item.name(), item.price(), item.shop_name(), item.location());
-                                    discord.send_message(channel_id, &msg, "", false);
+                                    discord.send_message(private_channel_id, &msg, "", false);
                                 }
                             });
                         }
